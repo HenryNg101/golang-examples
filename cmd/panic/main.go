@@ -1,29 +1,113 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
-func main() {
-	f()
-	fmt.Println("Returned normally from f.")
+///////////////////////////////////////////////////////////
+// Basic Defer + LIFO
+///////////////////////////////////////////////////////////
+
+func deferDemo() {
+	fmt.Println("deferDemo start")
+
+	defer fmt.Println("defer 1")
+	defer fmt.Println("defer 2")
+	defer fmt.Println("defer 3")
+
+	fmt.Println("deferDemo end")
 }
 
-func f() {
+///////////////////////////////////////////////////////////
+// Defer Arguments Evaluation Timing
+///////////////////////////////////////////////////////////
+
+func deferArgumentDemo() {
+	fmt.Println("\ndeferArgumentDemo")
+
+	x := 10
+
+	defer fmt.Println("deferred value:", x)
+
+	x = 20
+	fmt.Println("current value:", x)
+}
+
+///////////////////////////////////////////////////////////
+// Defer + Named Return (modifying return value)
+///////////////////////////////////////////////////////////
+
+func namedReturnDemo() (result int) {
+	fmt.Println("\nnamedReturnDemo")
+
+	defer func() {
+		result += 10
+	}()
+
+	result = 5
+	return
+}
+
+///////////////////////////////////////////////////////////
+// Basic Panic
+///////////////////////////////////////////////////////////
+
+func panicDemo() {
+	fmt.Println("\npanicDemo start")
+
+	panic("something went terribly wrong")
+
+	// never runs
+	// fmt.Println("panicDemo end")
+}
+
+///////////////////////////////////////////////////////////
+// Recover Properly
+///////////////////////////////////////////////////////////
+
+func recoverDemo() {
+	fmt.Println("\nrecoverDemo start")
+
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("Recovered in f", r)
+			fmt.Println("Recovered from panic:", r)
 		}
 	}()
-	fmt.Println("Calling g.")
-	g(3)
-	fmt.Println("Returned normally from g.")
+
+	panic("boom!")
+
+	// never runs
+	// fmt.Println("recoverDemo end")
 }
 
-func g(i int) {
-	if i > 3 {
-		fmt.Println("Panicking!")
-		panic(fmt.Sprintf("%v", i))
-	}
-	defer fmt.Println("Defer in g", i)
-	fmt.Println("Printing in g", i)
-	g(i + 1)
+///////////////////////////////////////////////////////////
+// Panic Without Recover (Program Crash)
+///////////////////////////////////////////////////////////
+
+func crashDemo() {
+	fmt.Println("\ncrashDemo start")
+	panic("this will crash the program")
+}
+
+///////////////////////////////////////////////////////////
+// MAIN
+///////////////////////////////////////////////////////////
+
+func main() {
+
+	// Defer LIFO
+	deferDemo()
+
+	// Defer argument timing
+	deferArgumentDemo()
+
+	// Named return modification
+	result := namedReturnDemo()
+	fmt.Println("namedReturnDemo result:", result)
+
+	// Recover example
+	recoverDemo()
+
+	// Uncomment to see program crash
+	// crashDemo()
 }
