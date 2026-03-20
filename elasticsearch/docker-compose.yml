@@ -1,0 +1,52 @@
+version: "3.8"
+# This current setup is for local testing only with a single node Elasticsearch cluster, and Kibana dashboard
+# It based on a very minimal setup, with no TLS or HTTPS whatsoever: https://www.elastic.co/docs/deploy-manage/security/set-up-minimal-security
+
+services:
+  # Run some commands after Elasticsearch cluster is up. Basically check until service is available to take a HTTP request, 
+  # then make a request to change password for ES's service account for Kibana
+  setup:
+    image: curlimages/curl:latest
+    depends_on:
+      - elasticsearch
+    entrypoint: >
+      sh -c "
+      echo 'Waiting for Elasticsearch...';
+      until curl -s -u elastic:${ELASTIC_PASSWORD} http://elasticsearch:9200 >/dev/null; do sleep 2; done;
+
+      echo 'Setting kibana_system password...';
+      curl -s -u elastic:${ELASTIC_PASSWORD} -X POST http://elasticsearch:9200/_security/user/kibana_system/_password \
+      -H 'Content-Type: application/json' \
+      -d '{
+        \"password\": \"${KIBANA_PASSWORD}\"
+      }';
+
+      echo 'Done!';
+      "
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch-wolfi:9.3.1
+    container_name: es01
+    environment:
+      - discovery.type=single-node
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - xpack.security.enabled=true
+    ports:
+      - "9200:9200"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana-wolfi:9.3.1
+    container_name: kibana
+    depends_on:
+      - elasticsearch
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
+    ports:
+      - "5601:5601"
+
+volumes:
+  esdata:
