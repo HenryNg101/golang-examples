@@ -3,11 +3,12 @@ package main
 import (
 	"log"
 
-	"github.com/HenryNg101/golang-examples/sql_db/db"
-	"github.com/HenryNg101/golang-examples/sql_db/models"
+	"github.com/HenryNg101/golang-examples/sql_db/pkg/db"
+	"github.com/HenryNg101/golang-examples/sql_db/pkg/models"
 	"gorm.io/gorm"
 )
 
+// Auto migration
 func createOrAlterTables(db *gorm.DB) {
 	err := db.AutoMigrate(
 		&models.User{},
