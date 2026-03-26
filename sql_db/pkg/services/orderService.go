@@ -53,12 +53,20 @@ func DeleteOrder(db *gorm.DB, orderID uint) error {
 	return db.Delete(&models.Order{}, orderID).Error
 }
 
+// Subquery example
 func GetExpensiveOrders(db *gorm.DB) ([]models.Order, error) {
 	var orders []models.Order
 
-	err := db.Where(`
-		price > (SELECT AVG(price) FROM orders)
-	`).Find(&orders).Error
+	/* This is equivalent as this query, with a subquery inside:
+	SELECT * from orders
+	WHERE price > (SELECT AVG(price) FROM orders)
+	LIMIT 20;
+	*/
+
+	err := db.Where("price > (?)", db.Table("orders").Select("AVG(price)")).
+		Limit(20).
+		Find(&orders).
+		Error
 
 	return orders, err
 }
