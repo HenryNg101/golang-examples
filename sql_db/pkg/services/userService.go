@@ -52,6 +52,26 @@ func GetUserOrders(db *gorm.DB, userID uint) (models.User, error) {
 	return user, err
 }
 
+type UsersOrdersCounts struct {
+	UserId      int
+	OrdersCount int
+}
+
+// A simple inner join and aggregation together to find out users that orders the most
+func GetTopUsersOrdersCounts(db *gorm.DB, count int) ([]UsersOrdersCounts, error) {
+	var result []UsersOrdersCounts
+	err := db.Model(&models.User{}).
+		Joins("JOIN orders ON orders.user_id = users.id").
+		Select("user_id, COUNT(*) as orders_count").
+		Group("user_id").
+		Order("orders_count DESC").
+		Limit(count).
+		Find(&result).
+		Error
+
+	return result, err
+}
+
 func CreateUser(db *gorm.DB, name string) (models.User, error) {
 	user := models.User{Name: name}
 	err := db.Create(&user).Error

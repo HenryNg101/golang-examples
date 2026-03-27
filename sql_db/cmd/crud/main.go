@@ -51,6 +51,15 @@ func main() {
 		}
 	}
 
+	// Join test
+	topUsersOrder, err := services.GetTopUsersOrdersCounts(db, 20)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, topUser := range topUsersOrder {
+		fmt.Printf("User ID: %d\tOrders count: %d\n", topUser.UserId, topUser.OrdersCount)
+	}
+
 	// Subquery test
 	orders, err := services.GetExpensiveOrders(db)
 	for _, order := range orders {

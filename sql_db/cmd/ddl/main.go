@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/HenryNg101/golang-examples/sql_db/pkg"
 	"github.com/HenryNg101/golang-examples/sql_db/pkg/db"
 	"github.com/HenryNg101/golang-examples/sql_db/pkg/models"
 	"gorm.io/gorm"
@@ -34,4 +35,7 @@ func dropTables(db *gorm.DB) {
 func main() {
 	db := db.ConnectDB()
 	createOrAlterTables(db)
+	pkg.BulkCreate(db)
+	// The one below will drop all tables and delete all data
+	// dropTables(db)
 }

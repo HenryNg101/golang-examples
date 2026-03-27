@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// I use raw SQL query for better performance, as the generate_series() function is Postgres specific function for generating values
 func BulkCreate(db *gorm.DB) {
 	err := db.Exec(`
 	INSERT INTO users(name, created_at)
