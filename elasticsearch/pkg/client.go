@@ -49,5 +49,4 @@ func ProcessResponse(resp *esapi.Response, err error) {
 	if resp.IsError() {
 		log.Fatal(resp)
 	}
-	defer resp.Body.Close()
 }

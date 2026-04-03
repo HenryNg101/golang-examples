@@ -30,6 +30,7 @@ func main() {
 		client.Indices.Create.WithBody(strings.NewReader(string(mapping))),
 	)
 	pkg.ProcessResponse(resp, err)
+	defer resp.Body.Close()
 
 	bulkInsert(client, "data.ndjson", "sample_web_logs")
 

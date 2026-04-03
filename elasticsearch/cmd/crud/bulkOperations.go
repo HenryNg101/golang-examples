@@ -36,6 +36,7 @@ func bulkInsert(client *elasticsearch.Client, sourceFile string, idxName string)
 		if count >= batchSize {
 			resp, err := client.Bulk(bytes.NewReader(buf.Bytes()))
 			pkg.ProcessResponse(resp, err)
+			defer resp.Body.Close()
 
 			buf.Reset()
 			count = 0
@@ -46,6 +47,7 @@ func bulkInsert(client *elasticsearch.Client, sourceFile string, idxName string)
 	if buf.Len() > 0 {
 		resp, err := client.Bulk(bytes.NewReader(buf.Bytes()))
 		pkg.ProcessResponse(resp, err)
+		defer resp.Body.Close()
 	}
 }
 
