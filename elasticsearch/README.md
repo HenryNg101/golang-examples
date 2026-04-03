@@ -56,3 +56,24 @@ docker compose down -v
 * Do not use in production as-is
 
 ---
+
+## About the sample data used in the example
+
+So, this is the sample data that I used from Kibana's sample data of sample web logs, contain information on web requests logs. Each document of the index is a request. Here's what the fields means:
+
+| Field        | Meaning                        |
+| ------------ | ----------------------------   |
+| `@timestamp` | When request happened          |
+| `clientip`   | IP of the request maker        |
+| `request`    | What endpoint they hit         |
+| `response`   | HTTP status (200, 404, etc.)   |
+| `bytes`      | Response size                  |
+| `geo.src`    | Country of user                |
+| `url`        | Full URL                       |
+| `agent`      | Browser / client               |
+| `referer`    | Where traffic came from        |
+| `tags`       | success / error labeling       |
+| `machine.os` | client OS                      |
+| `extension`  | file type requested            |
+
+There are also some other fields of this document, but they are either too deep in technical, or I don't use it for the demo

@@ -30,3 +30,7 @@ profile.cov
 # Editor/IDE
 # .idea/
 # .vscode/
+
+# Ignore for elasticsearch related files
+/elasticsearch/*.json
+/elasticsearch/*.ndjson
