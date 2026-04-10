@@ -34,3 +34,30 @@ profile.cov
 # Ignore for elasticsearch related files
 /elasticsearch/*.json
 /elasticsearch/*.ndjson
+
+
+# --- Protocol Buffers Specifics ---
+
+# Ignore generated source code (standard practice)
+*.pb.go
+
+# Ignore compiled descriptor sets
+*.pb
+*.bin
+*.desc
+
+# --- Tooling & Build Artifacts ---
+
+# Ignore protoc dependencies and caches
+.cache/
+.gocache/
+
+# If using 'buf' (modern CLI tool)
+.buf/
+buf.lock
+
+# Build directories where protoc outputs files
+/bin/
+/gen/
+/out/
+/target/
