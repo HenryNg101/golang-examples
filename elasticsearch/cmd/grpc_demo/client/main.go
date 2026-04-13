@@ -24,7 +24,7 @@ func main() {
 
 	client := pb.NewElasticSearchServiceClient(conn)
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	resp, err := client.SearchByRequest(ctx, &pb.SearchRequest{
@@ -49,5 +49,37 @@ func main() {
 	fmt.Println("Max score is: ", *resp.MaxScore)
 	for _, document := range resp.Documents {
 		fmt.Println(document)
+	}
+	fmt.Printf("\n\n")
+
+	// Server streaming RPC call
+	streamingCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	stream, err := client.StreamSearch(streamingCtx, &pb.SearchRequest{
+		Query:       "elasticsearch",
+		SearchType:  "match",
+		SearchField: "request",
+		Limit:       10,
+		OutputFields: []string{
+			"@timestamp",
+			"clientip",
+			"request",
+			"response",
+			"bytes",
+			"geo.srcdest",
+			"url", "agent",
+		},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for {
+		doc, err := stream.Recv()
+		if err != nil {
+			break
+		}
+		fmt.Println(doc.Json)
 	}
 }

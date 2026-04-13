@@ -6,7 +6,7 @@ option go_package = "grpc-demo/proto;proto";
 
 service ElasticSearchService {
     rpc SearchByRequest(SearchRequest) returns (SearchResponse);
-    // rpc SearchByRequestKeyword()
+    rpc StreamSearch(SearchRequest) returns (stream Document);
 }
 
 message SearchRequest {
@@ -22,19 +22,6 @@ message SearchResponse {
     repeated string documents = 2;
 }
 
-// service LogService {
-//   // rpc SearchLogs(SearchRequest) returns (SearchResponse);
-//   rpc StreamLogs(SearchRequest) returns (stream LogEntry);
-// }
-
-// message SearchRequest {
-//   string query = 1;
-// }
-
-// message LogEntry {
-//   string message = 1;
-// }
-
-// message SearchResponse {
-//   repeated LogEntry logs = 1;
-// }
+message Document {
+    string json = 1;
+}
