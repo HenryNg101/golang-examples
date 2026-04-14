@@ -18,9 +18,8 @@ func (s *server) StreamSearch(req *pb.SearchRequest, stream pb.ElasticSearchServ
 		log.Fatal(err)
 	}
 
+	// Get the client, build query, and search
 	esClient := pkg.GetClient()
-
-	// reuse your query building logic
 	searchQuery := fmt.Sprintf(
 		`
 		{

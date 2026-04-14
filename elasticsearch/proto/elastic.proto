@@ -8,6 +8,7 @@ service ElasticSearchService {
     rpc SearchByRequest(SearchRequest) returns (SearchResponse);
     rpc StreamSearch(SearchRequest) returns (stream Document);
     rpc BulkUpload(stream BulkEntry) returns (UploadSummary);
+    rpc LiveSearch(stream SearchRequest) returns (stream Document);
 }
 
 message SearchRequest {

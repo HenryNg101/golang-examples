@@ -30,17 +30,23 @@ func (s *server) BulkUpload(stream grpc.ClientStreamingServer[pb.BulkEntry, pb.U
 
 		bulkResults := r["items"].([]interface{})
 
+		sentDocs, successes := 0, 0
 		for _, result := range bulkResults {
 			index := result.(map[string]interface{})["index"]
 			statusCode, ok := index.(map[string]interface{})["status"].(float64)
 			if !ok {
 				log.Fatal("Can't parse status code value")
 			}
-			documentsSent++
+			sentDocs++
+			// documentsSent++
 			if statusCode >= 200 && statusCode < 300 {
-				successesCount++
+				successes++
+				// successesCount++
 			}
 		}
+		documentsSent += int32(sentDocs)
+		successesCount += int32(successes)
+		log.Printf("Proccessed %d documents. %d documents were successfully processed", sentDocs, successes)
 	}
 
 	return stream.SendAndClose(&pb.UploadSummary{
