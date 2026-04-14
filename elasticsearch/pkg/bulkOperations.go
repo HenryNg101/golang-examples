@@ -1,17 +1,17 @@
-package main
+package pkg
 
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"fmt"
 	"log"
 	"os"
 
-	"github.com/HenryNg101/golang-examples/elasticsearch/pkg"
 	"github.com/elastic/go-elasticsearch/v9"
 )
 
-func bulkInsert(client *elasticsearch.Client, sourceFile string, idxName string) {
+func BulkInsert(client *elasticsearch.Client, sourceFile string, idxName string) {
 	f, err := os.Open(sourceFile)
 	if err != nil {
 		log.Fatal(err)
@@ -35,7 +35,7 @@ func bulkInsert(client *elasticsearch.Client, sourceFile string, idxName string)
 
 		if count >= batchSize {
 			resp, err := client.Bulk(bytes.NewReader(buf.Bytes()))
-			pkg.ProcessResponse(resp, err)
+			ProcessResponse(resp, err)
 			defer resp.Body.Close()
 
 			buf.Reset()
@@ -46,12 +46,20 @@ func bulkInsert(client *elasticsearch.Client, sourceFile string, idxName string)
 	// send remaining
 	if buf.Len() > 0 {
 		resp, err := client.Bulk(bytes.NewReader(buf.Bytes()))
-		pkg.ProcessResponse(resp, err)
+		ProcessResponse(resp, err)
 		defer resp.Body.Close()
 	}
 }
 
 // Bulk delete
-func cleanUp(client *elasticsearch.Client) {
-
+func CleanUp(client *elasticsearch.Client, idxName string) {
+	query := `{"query": {"match_all": {}}}`
+	resp, err := client.DeleteByQuery(
+		[]string{idxName},
+		bytes.NewReader([]byte(query)),
+		client.DeleteByQuery.WithContext(context.Background()),
+		client.DeleteByQuery.WithRefresh(true), // Forces a refresh after the operation to make changes visible immediately
+	)
+	ProcessResponse(resp, err)
+	defer resp.Body.Close()
 }

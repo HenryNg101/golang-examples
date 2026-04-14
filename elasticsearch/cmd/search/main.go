@@ -1,35 +1,29 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"log"
-	"strings"
-
 	"github.com/HenryNg101/golang-examples/elasticsearch/pkg"
-	"github.com/elastic/go-elasticsearch/v9"
 )
 
-func searchHelper(client *elasticsearch.Client, searchQuery string) {
-	resp, err := client.Search(
-		client.Search.WithIndex("sample_web_logs"),
-		client.Search.WithBody(strings.NewReader(searchQuery)),
-	)
-	pkg.ProcessResponse(resp, err)
-	defer resp.Body.Close()
+// func searchHelper(client *elasticsearch.Client, searchQuery string) {
+// 	resp, err := client.Search(
+// 		client.Search.WithIndex("sample_web_logs"),
+// 		client.Search.WithBody(strings.NewReader(searchQuery)),
+// 	)
+// 	pkg.ProcessResponse(resp, err)
+// 	defer resp.Body.Close()
 
-	var r map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&r)
+// 	var r map[string]interface{}
+// 	json.NewDecoder(resp.Body).Decode(&r)
 
-	hits := r["hits"].(map[string]interface{})["hits"].([]interface{})
+// 	hits := r["hits"].(map[string]interface{})["hits"].([]interface{})
 
-	doc, err := json.MarshalIndent(hits, "", "\t")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(string(doc))
-	fmt.Println()
-}
+// 	doc, err := json.MarshalIndent(hits, "", "\t")
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	fmt.Println(string(doc))
+// 	fmt.Println()
+// }
 
 func main() {
 	client := pkg.GetClient()
@@ -46,7 +40,7 @@ func main() {
 			}
 		}
 	}`
-	searchHelper(client, searchQuery)
+	pkg.SearchHelper(client, searchQuery)
 
 	// Another search again. Exact search, with keyword search instead. No match will be found
 	searchQuery = `
@@ -60,7 +54,7 @@ func main() {
 			}
 		}
 	}`
-	searchHelper(client, searchQuery)
+	pkg.SearchHelper(client, searchQuery)
 
 	// Search for download queries
 	searchQuery = `
@@ -75,7 +69,7 @@ func main() {
 		},
 		"size": 10
 	}`
-	searchHelper(client, searchQuery)
+	pkg.SearchHelper(client, searchQuery)
 
 	// Multi-match, with
 }

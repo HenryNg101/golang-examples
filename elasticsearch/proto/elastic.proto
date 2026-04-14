@@ -7,6 +7,7 @@ option go_package = "grpc-demo/proto;proto";
 service ElasticSearchService {
     rpc SearchByRequest(SearchRequest) returns (SearchResponse);
     rpc StreamSearch(SearchRequest) returns (stream Document);
+    rpc BulkUpload(stream BulkEntry) returns (UploadSummary);
 }
 
 message SearchRequest {
@@ -24,4 +25,13 @@ message SearchResponse {
 
 message Document {
     string json = 1;
+}
+
+message BulkEntry {
+    string operations = 1;
+}
+
+message UploadSummary {
+    int32 success_count = 1;
+    int32 documents_sent = 2;
 }

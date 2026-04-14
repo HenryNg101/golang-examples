@@ -21,9 +21,6 @@ func main() {
 	pagination.ExportDataFromIndex(client, sampleIndexName, "data.ndjson")
 	mapping := pkg.ExportMappingFromIndex(client, sampleIndexName, "mapping.json")
 
-	// resp, err := client.Indices.Delete([]string{sampleIndexName})
-	// pkg.ProcessResponse(resp, err)
-
 	// Create index
 	resp, err := client.Indices.Create(
 		"sample_web_logs",
@@ -32,9 +29,12 @@ func main() {
 	pkg.ProcessResponse(resp, err)
 	defer resp.Body.Close()
 
-	bulkInsert(client, "data.ndjson", "sample_web_logs")
+	pkg.BulkInsert(client, "data.ndjson", "sample_web_logs")
 
 	// Delete index. Uncomment to try
 	// resp, err = client.Indices.Delete([]string{"sample_web_logs"})
 	// pkg.ProcessResponse(resp, err)
+
+	// Clean index. Uncomment to try
+	// pkg.CleanUp(client, "sample_web_logs")
 }
