@@ -13,7 +13,7 @@ import (
 )
 
 // Make use of scroll search to export all
-func ExportDataFromIndex(client *elasticsearch.Client, idxName string, outputFileName string) {
+func ExportDataFromDataStream(client *elasticsearch.Client, dataStream string, outputFileName string) {
 	f, err := os.Create(filepath.Join(".", outputFileName))
 	if err != nil {
 		log.Fatal(err)
@@ -28,7 +28,7 @@ func ExportDataFromIndex(client *elasticsearch.Client, idxName string, outputFil
 		// First scroll, so just do normal search with scroll
 		if scrollID == "" {
 			res, err = client.Search(
-				client.Search.WithIndex(idxName),
+				client.Search.WithIndex(dataStream),
 				client.Search.WithSize(1000),
 				client.Search.WithScroll(time.Minute),
 				client.Search.WithBody(strings.NewReader(`

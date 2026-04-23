@@ -1,49 +1,160 @@
-# Elasticsearch + Kibana (Docker Compose)
+# 🔍 Elasticsearch + Kibana + gRPC Demo
 
-Minimal local setup for running a single-node Elasticsearch cluster with Kibana, using basic authentication (no TLS).
+This module demonstrates how to work with **Elasticsearch** using Go, including:
 
-## 🚀 Quick Start
+- Search queries (Query DSL)
+- Data ingestion (bulk indexing)
+- Working with **data streams vs indices**
+- Aggregation queries
+- gRPC integration with search services
 
-1. Create a `.env` file in the same directory, set the password as you wish:
+---
 
-```
-ELASTIC_PASSWORD=...
-KIBANA_PASSWORD=...
-```
+## 🚀 How to Run
 
-2. Start the stack:
+From the project root:
 
-```
+```bash
 docker compose up
-```
+````
 
-3. Open Kibana:
+Wait until:
+
+* Elasticsearch is healthy
+* Kibana is accessible
+
+---
+
+## 🔑 Access Kibana
+
+Open:
 
 ```
 http://localhost:5601
 ```
 
-4. Log in with:
+Login with:
 
 * **Username:** `elastic`
 * **Password:** `${ELASTIC_PASSWORD}` (from `.env`)
 
 ---
 
-## ⚙️ What this setup does
+## 📥 Load Sample Dataset (Required)
 
-* Runs Elasticsearch with security enabled
-* Automatically sets the `kibana_system` user password via API
-* Connects Kibana using that service account
-* Avoids TLS/cert complexity (dev-only)
+This project uses **Kibana's sample web logs dataset**.
+
+### Steps:
+
+1. Open Kibana (`localhost:5601`)
+2. Open the side menu
+3. Click **"Add Integrations"**
+4. Search for: `Sample Data`
+5. Click into it
+6. Go to:
+   * **"Add data" → "Sample data"**
+   * Then **"Other sample data sets"**
+7. Install **"Sample web logs"**
 
 ---
 
-## 🧹 Reset / Fresh Start
+## ⚙️ Configure Environment
 
-To reset everything (including data volume):
+After installing the dataset, set:
 
+```env
+ELASTIC_DATA_STREAM_SOURCE=kibana_sample_data_logs
 ```
+
+---
+
+## 📊 About the Dataset
+
+This dataset represents **web server logs**, where each document is a request information
+
+| Field        | Meaning                |
+| ------------ | ---------------------- |
+| `@timestamp` | When request happened  |
+| `clientip`   | IP of the requester    |
+| `request`    | Endpoint accessed      |
+| `response`   | HTTP status code       |
+| `bytes`      | Response size          |
+| `geo.src`    | Country of origin      |
+| `url`        | Full URL               |
+| `agent`      | Browser/client info    |
+| `referer`    | Traffic source         |
+| `tags`       | success / error labels |
+| `machine.os` | Client OS              |
+| `extension`  | File type requested    |
+
+---
+
+## 🧠 What This Module Demonstrates
+
+### 1. Working with Data Streams
+
+* Source data comes from:
+
+  ```
+  kibana_sample_data_logs
+  ```
+* Data streams are:
+
+  * Append-only
+  * Not suitable for direct CRUD
+
+---
+
+### 2. Reindexing into Custom Index
+
+This project demonstrates:
+
+* Reading from a data stream
+* Transforming documents
+* Writing into a **custom index**
+
+Why?
+
+* Enables **full CRUD operations**
+* More flexible mappings
+* Better for application-level control
+
+---
+
+### 3. Bulk Ingestion
+
+* Efficient indexing using `_bulk`
+* Batching strategies
+
+---
+
+### 4. Search APIs
+
+* Query DSL usage
+* Filtering, matching, aggregations
+
+---
+
+### 5. gRPC Integration
+
+* Exposing search functionality via gRPC
+* Structuring services cleanly
+
+---
+
+## ▶️ Run Example
+
+```bash
+go run ./elasticsearch/cmd/search
+```
+
+---
+
+## 🧹 Reset
+
+To reset Elasticsearch data:
+
+```bash
 docker compose down -v
 ```
 
@@ -51,29 +162,16 @@ docker compose down -v
 
 ## ⚠️ Notes
 
-* This setup is **for local development only**
-* No HTTPS / TLS is configured
-* Do not use in production as-is
+* Single-node Elasticsearch (dev only)
+* No TLS / HTTPS
+* Minimal security setup
+* Dataset is **provided by Kibana**, not custom
 
 ---
 
-## About the sample data used in the example
+## 📌 Ideas for Expansion
 
-So, this is the sample data that I used from Kibana's sample data of sample web logs, contain information on web requests logs. Each document of the index is a request. Here's what the fields means:
-
-| Field        | Meaning                        |
-| ------------ | ----------------------------   |
-| `@timestamp` | When request happened          |
-| `clientip`   | IP of the request maker        |
-| `request`    | What endpoint they hit         |
-| `response`   | HTTP status (200, 404, etc.)   |
-| `bytes`      | Response size                  |
-| `geo.src`    | Country of user                |
-| `url`        | Full URL                       |
-| `agent`      | Browser / client               |
-| `referer`    | Where traffic came from        |
-| `tags`       | success / error labeling       |
-| `machine.os` | client OS                      |
-| `extension`  | file type requested            |
-
-There are also some other fields of this document, but they are either too deep in technical, or I don't use it for the demo
+* Add custom mappings & analyzers
+* Compare keyword vs text fields
+* Add pagination strategies (search_after)
+* Introduce ranking/scoring tweaks

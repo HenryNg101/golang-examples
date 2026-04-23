@@ -17,24 +17,26 @@ func main() {
 		log.Fatal("Error loading .env file: ", err)
 	}
 	client := pkg.GetClient()
-	sampleIndexName := os.Getenv("ELASTIC_DEMO_SOURCE")
-	pagination.ExportDataFromIndex(client, sampleIndexName, "data.ndjson")
-	mapping := pkg.ExportMappingFromIndex(client, sampleIndexName, "mapping.json")
+	dataStreamSource := os.Getenv("ELASTIC_DATA_STREAM_SOURCE")
+	esDataFile, esMappingFile, targetIndex := "es_data.ndjson", "es_mapping.json", "sample_web_logs"
+
+	pagination.ExportDataFromDataStream(client, dataStreamSource, esDataFile)
+	mapping := pkg.ExportMappingFromDataStream(client, dataStreamSource, esMappingFile)
 
 	// Create index
 	resp, err := client.Indices.Create(
-		"sample_web_logs",
+		targetIndex,
 		client.Indices.Create.WithBody(strings.NewReader(string(mapping))),
 	)
 	pkg.ProcessResponse(resp, err)
 	defer resp.Body.Close()
 
-	pkg.BulkInsert(client, "data.ndjson", "sample_web_logs")
+	pkg.BulkInsert(client, esDataFile, targetIndex)
 
 	// Delete index. Uncomment to try
-	// resp, err = client.Indices.Delete([]string{"sample_web_logs"})
+	// resp, err = client.Indices.Delete([]string{targetIndex})
 	// pkg.ProcessResponse(resp, err)
 
 	// Clean index. Uncomment to try
-	// pkg.CleanUp(client, "sample_web_logs")
+	// pkg.CleanUp(client, targetIndex)
 }
