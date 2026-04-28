@@ -60,6 +60,8 @@ Create a `.env` file in the root. To setup different parts of the project, use t
 
 - Redis:
     ```
+    REDIS_HOST=localhost
+    REDIS_PORT=6379
     REDIS_PASSWORD=...
     ```
 

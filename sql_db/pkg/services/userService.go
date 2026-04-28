@@ -6,8 +6,8 @@ import (
 )
 
 type UserSpending struct {
-	UserID uint
-	Total  uint
+	UserID uint `json:"user_id"`
+	Total  uint `json:"total_spent"`
 }
 
 func GetTopSpenders(db *gorm.DB, count int) ([]UserSpending, error) {
