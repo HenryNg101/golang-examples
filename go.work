@@ -3,5 +3,6 @@ go 1.25.8
 use (
 	./elasticsearch
 	./programming
+	./redis
 	./sql_db
 )
