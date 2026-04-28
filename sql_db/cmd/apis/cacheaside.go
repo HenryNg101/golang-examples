@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
@@ -51,7 +52,9 @@ func (handler *Handler) TopSpendersHandler(ctx *gin.Context) {
 
 	// Save in cache for future use
 	encodedResult, err := json.Marshal(result)
-	handler.RedisClient.Set(ctx, key, encodedResult, 5*time.Minute)
+	// Add new key-value pair with TTL jitter to prevent stuff like cache stampede
+	ttl := 5*time.Minute + time.Duration(rand.Intn(60))*time.Second
+	handler.RedisClient.Set(ctx, key, encodedResult, ttl)
 
 	ctx.JSON(http.StatusOK, gin.H{"topUsers": result})
 }
