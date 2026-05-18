@@ -7,6 +7,7 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
+// You can run multiple instances of this in separate consoles, to observe how consumer group assign partition(s) to consumer(s)
 func main() {
 	reader := kafka.NewReader(kafka.ReaderConfig{
 		Brokers:  []string{"localhost:29092"},
