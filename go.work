@@ -1,6 +1,7 @@
 go 1.25.8
 
 use (
+	./design_patterns
 	./elasticsearch
 	./kafka
 	./programming
